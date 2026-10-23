@@ -1,15 +1,15 @@
 import { ArrowRight } from "lucide-react";
 
-import { siteConfig } from "@/site.config";
+import { getHeroText } from "@/lib/data";
 import { Container } from "@/components/layout/container";
 import { Button } from "@/components/ui/button";
 
 /* 첫 화면(히어로).
-   - 글자는 site.config.ts 의 hero 에서 바꿉니다.
+   - 글자는 관리자 페이지(/admin)에서 바꿀 수 있고, 바꾸지 않은 글자는 site.config.ts 의 hero 를 씁니다.
    - 21st.dev 의 멋진 히어로로 바꾸고 싶다면: 그 컴포넌트를 components/ui 에 넣고,
      이 파일의 <section> 안쪽을 그 컴포넌트로 감싸면 됩니다. (Claude에게 /add-component 로 요청) */
-export function Hero() {
-  const { hero } = siteConfig;
+export async function Hero() {
+  const hero = await getHeroText();
 
   return (
     <section id="top" className="relative overflow-hidden">

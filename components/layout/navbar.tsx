@@ -6,6 +6,7 @@ import { Menu, X } from "lucide-react";
 
 import { siteConfig } from "@/site.config";
 import { Container } from "@/components/layout/container";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 /** 상단 메뉴. 메뉴 항목은 site.config.ts 의 nav 에서 바꿉니다. 모바일에서는 햄버거 버튼으로 열림. */
@@ -30,6 +31,9 @@ export function Navbar() {
               {item.label}
             </a>
           ))}
+          <Button asChild size="sm">
+            <Link href={siteConfig.navButton.href}>{siteConfig.navButton.label}</Link>
+          </Button>
         </nav>
 
         {/* 모바일 메뉴 버튼 */}
@@ -56,6 +60,13 @@ export function Navbar() {
               {item.label}
             </a>
           ))}
+          <Link
+            href={siteConfig.navButton.href}
+            onClick={() => setOpen(false)}
+            className="py-3 text-base font-medium text-foreground"
+          >
+            {siteConfig.navButton.label}
+          </Link>
         </Container>
       </nav>
     </header>

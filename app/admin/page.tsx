@@ -5,6 +5,7 @@ import { ArrowLeft, EyeOff } from "lucide-react";
 import { siteConfig } from "@/site.config";
 import { isAdmin, isAdminPasswordSet } from "@/lib/admin-auth";
 import { getAdminClient } from "@/lib/supabase-admin";
+import { getHeroText, HERO_TEXT_FIELDS } from "@/lib/data";
 import type { Item } from "@/lib/types";
 import { Container } from "@/components/layout/container";
 import { Button } from "@/components/ui/button";
@@ -12,6 +13,7 @@ import { logout } from "./actions";
 import { LoginForm } from "./_components/login-form";
 import { ItemForm } from "./_components/item-form";
 import { DeleteButton } from "./_components/delete-button";
+import { HeroForm } from "./_components/hero-form";
 
 /* 관리자 페이지 (주소: /admin)
    1) 비밀번호가 설정 안 됐으면 → 설정 안내
@@ -85,6 +87,17 @@ export default async function AdminPage(props: PageProps<"/admin">) {
     .order("created_at", { ascending: true });
   const items = (data ?? []) as Item[];
 
+  // 첫 화면 글자: 지금 사이트에 보이는 글자를 입력 칸에 채워 둠
+  const hero = await getHeroText();
+  const heroValues: Record<string, string> = {
+    "hero.eyebrow": hero.eyebrow,
+    "hero.title": hero.title,
+    "hero.description": hero.description,
+    "hero.primaryCta": hero.primaryCta.label,
+    "hero.secondaryCta": hero.secondaryCta.label,
+  };
+  const heroFields = HERO_TEXT_FIELDS.map((f) => ({ ...f, value: heroValues[f.key] }));
+
   return (
     <Container className="py-10">
       {/* 상단 바 */}
@@ -103,6 +116,12 @@ export default async function AdminPage(props: PageProps<"/admin">) {
           </Button>
         </form>
       </div>
+
+      {/* 첫 화면(히어로) 글자 수정 */}
+      <section className="mt-8 max-w-2xl rounded-xl border p-6">
+        <h2 className="mb-5 text-lg font-semibold">첫 화면 글자</h2>
+        <HeroForm fields={heroFields} />
+      </section>
 
       {/* 섹션 탭 (site.config.ts 의 adminSections) */}
       <nav className="mt-8 flex flex-wrap gap-2">
