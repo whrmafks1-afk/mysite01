@@ -19,7 +19,7 @@ export async function Hero() {
 
   return (
     <section
-      id="top"
+      id="home"
       className="relative overflow-hidden bg-gradient-to-b from-secondary to-background"
     >
       <Container className="grid min-h-[calc(100svh-5rem)] items-center gap-12 py-20 lg:grid-cols-2 lg:py-24">

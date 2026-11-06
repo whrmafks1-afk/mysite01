@@ -1,5 +1,6 @@
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
+import { Intro } from "@/components/sections/intro";
 import { Hero } from "@/components/sections/hero";
 import { About } from "@/components/sections/about";
 import { Features } from "@/components/sections/features";
@@ -19,6 +20,7 @@ export default function HomePage() {
     <>
       <Navbar />
       <main className="flex-1">
+        <Intro />
         <Hero />
         <Features />
         <About />

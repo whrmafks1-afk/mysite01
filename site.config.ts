@@ -25,6 +25,18 @@ export const siteConfig = {
   /* 상단 메뉴 제일 오른쪽 버튼 (관리자 페이지는 맨 아래 푸터의 작은 점 • 으로 들어갑니다) */
   navButton: { label: "함께 시작하기", href: "#contact" },
 
+  /* 맨 위 인트로 장면 (어두운 배경 + 천천히 도는 입체 글자 + 지구와 링) */
+  intro: {
+    topLabel: "The art of connection",
+    subtitle: "A bond that shines forever",
+    word: "금란지교", // 천천히 360도 회전하는 큰 글자
+    hint: "천천히 돌아가는 금란지교를 감상해 보세요",
+    title: "세계를 잇는 인연, 금란지교",
+    description: "둥근 다리 위에 지구와 소중한 인연을 담았습니다.",
+    footLeft: "Geumranjigyo · 3D Experience",
+    footRight: "Created for precious connections",
+  },
+
   /* 첫 화면(히어로)
      - title 의 마지막 줄은 보라색으로 보입니다. (\n 이 줄바꿈)
      - 이 글자들은 관리자 페이지(/admin)에서 바꾼 값이 있으면 그 값이 우선입니다. */

@@ -52,6 +52,19 @@
   /* 어두운 배경 위의 강조 글자 (회사소개 섹션의 라벨, 번호) */
   --highlight: #b49cff;
 
+  /* 맨 위 인트로 장면: 회전 글자 무지개색, 금색 링, 지구 */
+  --rainbow-1: #f06a7a;
+  --rainbow-2: #f5a25d;
+  --rainbow-3: #f2e27a;
+  --rainbow-4: #6fd6c4;
+  --rainbow-5: #5b8def;
+  --rainbow-6: #8f6cf0;
+  --gold: #e3c487;
+  --gold-light: #f5e8cc;
+  --globe: #2a8fb5;
+  --globe-deep: #165a7d;
+  --globe-land: #cad7ea;
+
   /* 프로젝트 카드 색 (연보라 / 연하늘 / 연분홍) */
   --tint-1: #e9e0ff;
   --tint-1-foreground: #7048e8;
@@ -137,5 +150,26 @@
   h2,
   h3 {
     font-family: var(--font-display);
+  }
+}
+
+/* 맨 위 인트로 장면의 움직임
+   - intro-spin  : '금란지교' 글자가 한 바퀴(360도) 도는 움직임. 속도는 intro.tsx 의 22s 에서 조절
+   - globe-drift : 지구 위 대륙이 옆으로 흘러가 지구가 도는 것처럼 보이게 하는 움직임 */
+@keyframes intro-spin {
+  from {
+    transform: rotateX(-8deg) rotateY(0deg);
+  }
+  to {
+    transform: rotateX(-8deg) rotateY(360deg);
+  }
+}
+
+@keyframes globe-drift {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
   }
 }
