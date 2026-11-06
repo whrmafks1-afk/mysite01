@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { MoveHorizontal, Pause, Play, RotateCcw } from "lucide-react";
+import { Pause, Play, RotateCcw } from "lucide-react";
 
 import { siteConfig } from "@/site.config";
 import { Container } from "@/components/layout/container";
@@ -229,11 +229,6 @@ export function Intro() {
               </div>
             </div>
           </div>
-
-          <p className="mt-4 flex items-center gap-2 text-sm text-background/70">
-            <MoveHorizontal className="size-4" />
-            {intro.hint}
-          </p>
         </div>
 
         {/* 아래 글자 + 회전 버튼 */}

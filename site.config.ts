@@ -30,7 +30,6 @@ export const siteConfig = {
     topLabel: "The art of connection",
     subtitle: "A bond that shines forever",
     word: "금란지교", // 천천히 360도 회전하는 큰 글자
-    hint: "드래그하여 금란지교 글자를 돌려보세요",
     controls: {
       label: "Explore the moment",
       pause: "회전 일시정지",
