@@ -2,23 +2,35 @@ import { siteConfig } from "@/site.config";
 import { Container } from "@/components/layout/container";
 import { SectionHeader } from "@/components/layout/section-header";
 
-/** 소개 섹션. 글자는 site.config.ts 의 about 에서 바꿉니다. */
+/** 회사소개 섹션 (어두운 배경). 글자는 site.config.ts 의 about 에서 바꿉니다. */
 export function About() {
   const { about } = siteConfig;
 
   return (
-    <section id="about" className="scroll-mt-16 bg-muted/50 py-24">
-      <Container className="grid gap-12 md:grid-cols-2 md:items-center">
+    <section id="about" className="scroll-mt-20 bg-foreground py-24 text-background sm:py-32">
+      <Container className="grid gap-16 lg:grid-cols-2 lg:items-center">
         <div>
-          <SectionHeader eyebrow={about.eyebrow} title={about.title} />
-          <div className="mt-6 space-y-4 text-base leading-relaxed text-muted-foreground">
+          <SectionHeader dark eyebrow={about.eyebrow} title={about.title} />
+          <div className="mt-8 text-base leading-loose text-background/70 sm:text-lg">
             {about.paragraphs.map((text, i) => (
               <p key={i}>{text}</p>
             ))}
           </div>
         </div>
-        {/* 이미지 자리: public 폴더에 사진을 넣고 <img src="/사진이름.jpg" /> 로 바꿔 보세요 */}
-        <div className="aspect-[4/3] w-full rounded-xl border bg-background" />
+
+        <ol className="border-t border-background/15">
+          {about.values.map((value, i) => (
+            <li key={value.title} className="flex gap-6 border-b border-background/15 py-10">
+              <span className="pt-1 text-sm font-medium text-highlight">
+                {String(i + 1).padStart(2, "0")}
+              </span>
+              <div>
+                <h3 className="text-xl font-bold tracking-tight sm:text-2xl">{value.title}</h3>
+                <p className="mt-2 text-background/70">{value.description}</p>
+              </div>
+            </li>
+          ))}
+        </ol>
       </Container>
     </section>
   );

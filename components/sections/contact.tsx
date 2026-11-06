@@ -1,39 +1,29 @@
-import { Mail } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 
 import { siteConfig } from "@/site.config";
 import { Container } from "@/components/layout/container";
 import { SectionHeader } from "@/components/layout/section-header";
 import { Button } from "@/components/ui/button";
 
-/** 연락처 섹션. 이메일과 링크는 site.config.ts 의 contact 에서 바꿉니다. */
+/** 마무리 안내(CTA) 섹션. 글자와 버튼은 site.config.ts 의 contact 에서 바꿉니다. */
 export function Contact() {
   const { contact } = siteConfig;
 
   return (
-    <section id="contact" className="scroll-mt-16 py-24">
+    <section id="contact" className="scroll-mt-20 py-24 sm:py-32">
       <Container>
-        <div className="rounded-2xl border bg-muted/50 px-6 py-16 text-center sm:px-12">
+        <div className="flex flex-col gap-10 rounded-[2rem] bg-accent px-8 py-14 sm:px-16 sm:py-20 md:flex-row md:items-center md:justify-between lg:px-24">
           <SectionHeader
             eyebrow={contact.eyebrow}
             title={contact.title}
             description={contact.description}
-            className="mx-auto"
           />
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-            <Button asChild size="lg">
-              <a href={`mailto:${contact.email}`}>
-                <Mail />
-                {contact.email}
-              </a>
-            </Button>
-            {contact.links.map((link) => (
-              <Button key={link.href} asChild size="lg" variant="outline">
-                <a href={link.href} target="_blank" rel="noreferrer">
-                  {link.label}
-                </a>
-              </Button>
-            ))}
-          </div>
+          <Button asChild size="lg" className="h-16 shrink-0 self-start rounded-xl px-8 text-lg md:self-center">
+            <a href={contact.button.href}>
+              {contact.button.label}
+              <ArrowUpRight className="size-5" />
+            </a>
+          </Button>
         </div>
       </Container>
     </section>

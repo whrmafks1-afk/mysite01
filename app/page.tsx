@@ -3,6 +3,7 @@ import { Footer } from "@/components/layout/footer";
 import { Hero } from "@/components/sections/hero";
 import { About } from "@/components/sections/about";
 import { Features } from "@/components/sections/features";
+import { Projects } from "@/components/sections/projects";
 import { Contact } from "@/components/sections/contact";
 
 /* 메인 페이지 = 섹션 블록을 위에서 아래로 쌓아 놓은 것.
@@ -19,8 +20,9 @@ export default function HomePage() {
       <Navbar />
       <main className="flex-1">
         <Hero />
-        <About />
         <Features />
+        <About />
+        <Projects />
         <Contact />
       </main>
       <Footer />
