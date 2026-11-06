@@ -30,7 +30,13 @@ export const siteConfig = {
     topLabel: "The art of connection",
     subtitle: "A bond that shines forever",
     word: "금란지교", // 천천히 360도 회전하는 큰 글자
-    hint: "천천히 돌아가는 금란지교를 감상해 보세요",
+    hint: "드래그하여 금란지교 글자를 돌려보세요",
+    controls: {
+      label: "Explore the moment",
+      pause: "회전 일시정지",
+      resume: "다시 회전",
+      reset: "처음 방향으로",
+    },
     title: "세계를 잇는 인연, 금란지교",
     description: "둥근 다리 위에 지구와 소중한 인연을 담았습니다.",
     footLeft: "Geumranjigyo · 3D Experience",

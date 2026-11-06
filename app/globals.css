@@ -157,17 +157,8 @@
 }
 
 /* 맨 위 인트로 장면의 움직임
-   - intro-spin  : '금란지교' 글자가 한 바퀴(360도) 도는 움직임. 속도는 intro.tsx 의 22s 에서 조절
-   - globe-drift : 지구 위 대륙이 옆으로 흘러가 지구가 도는 것처럼 보이게 하는 움직임 */
-@keyframes intro-spin {
-  from {
-    transform: rotateX(-8deg) rotateY(0deg);
-  }
-  to {
-    transform: rotateX(-8deg) rotateY(360deg);
-  }
-}
-
+   - globe-drift : 지구 위 대륙이 옆으로 흘러가 지구가 도는 것처럼 보이게 하는 움직임
+   ('금란지교' 글자 회전은 intro.tsx 의 SPIN_SECONDS 에서 조절) */
 @keyframes globe-drift {
   from {
     transform: translateX(0);

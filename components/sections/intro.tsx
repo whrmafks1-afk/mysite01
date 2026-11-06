@@ -1,4 +1,7 @@
-import { MoveHorizontal } from "lucide-react";
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+import { MoveHorizontal, Pause, Play, RotateCcw } from "lucide-react";
 
 import { siteConfig } from "@/site.config";
 import { Container } from "@/components/layout/container";
@@ -6,8 +9,11 @@ import { Container } from "@/components/layout/container";
 /* 맨 위 인트로 장면.
    - 글자는 site.config.ts 의 intro 에서 바꿉니다. (큰 회전 글자 = intro.word)
    - 색은 app/globals.css 의 --rainbow-*, --gold*, --globe* 에서 바꿉니다.
-   - 회전 속도: 아래 SPIN_SECONDS (숫자가 클수록 천천히) */
+   - 회전 속도: 아래 SPIN_SECONDS (숫자가 클수록 천천히)
+   - 마우스(손가락)로 좌우로 끌면 글자를 직접 돌릴 수 있습니다. 끄는 감도: DRAG_SPEED */
 const SPIN_SECONDS = 22;
+const DRAG_SPEED = 0.4;
+const TILT = "rotateX(-8deg)"; // 글자를 살짝 내려다보는 각도
 /* 글자 두께감(입체)을 만드는 뒤쪽 겹 수 */
 const DEPTH_LAYERS = 12;
 
@@ -40,6 +46,70 @@ function Land() {
 export function Intro() {
   const { intro } = siteConfig;
 
+  /* 회전 상태: 각도는 화면을 다시 그리지 않고 직접 바꿔서 부드럽게 돌아가게 함 */
+  const spinRef = useRef<HTMLDivElement>(null);
+  const angle = useRef(0);
+  const pausedRef = useRef(false);
+  const resetting = useRef(false);
+  const drag = useRef<{ x: number; start: number } | null>(null);
+  const [paused, setPaused] = useState(false);
+  const [dragging, setDragging] = useState(false);
+
+  useEffect(() => {
+    let raf = 0;
+    let last = performance.now();
+    // 움직임 줄이기를 켜 둔 사용자는 멈춘 상태로 시작
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      pausedRef.current = true;
+      raf = requestAnimationFrame(() => setPaused(true));
+    }
+
+    const tick = (now: number) => {
+      const dt = Math.min(now - last, 100) / 1000;
+      last = now;
+      if (resetting.current) {
+        // 가장 가까운 정면(0도, 360도 …)으로 부드럽게 돌아가기
+        const target = Math.round(angle.current / 360) * 360;
+        angle.current += (target - angle.current) * 0.12;
+        if (Math.abs(target - angle.current) < 0.2) {
+          angle.current = 0;
+          resetting.current = false;
+        }
+      } else if (!pausedRef.current && !drag.current) {
+        angle.current += (360 / SPIN_SECONDS) * dt;
+      }
+      if (spinRef.current) {
+        spinRef.current.style.transform = `${TILT} rotateY(${angle.current}deg)`;
+      }
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, []);
+
+  const togglePause = () => {
+    pausedRef.current = !pausedRef.current;
+    setPaused(pausedRef.current);
+  };
+  const resetDirection = () => {
+    resetting.current = true;
+  };
+
+  const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    resetting.current = false;
+    drag.current = { x: e.clientX, start: angle.current };
+    e.currentTarget.setPointerCapture(e.pointerId);
+    setDragging(true);
+  };
+  const onPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!drag.current) return;
+    angle.current = drag.current.start + (e.clientX - drag.current.x) * DRAG_SPEED;
+  };
+  const onPointerUp = () => {
+    drag.current = null;
+    setDragging(false);
+  };
+
   return (
     <section
       id="top"
@@ -56,6 +126,10 @@ export function Intro() {
         }}
       />
 
+      {/* 뒤쪽 세계지도 + 점선 궤도 */}
+      <WorldMap />
+      <DottedOrbits />
+
       <Container className="relative flex min-h-[calc(100svh-5rem)] flex-col py-8 sm:py-10">
         <p className="self-end text-xs uppercase tracking-[0.25em] text-background/70 sm:text-sm">
           {intro.topLabel}
@@ -67,14 +141,18 @@ export function Intro() {
             {intro.subtitle}
           </p>
 
-          {/* 천천히 360도 도는 입체 글자 */}
-          <div className="relative z-30 mt-2 [perspective:1200px]">
+          {/* 천천히 360도 도는 입체 글자 (좌우로 끌어서 직접 돌리기 가능) */}
+          <div
+            className={`relative z-30 mt-2 touch-pan-y select-none px-6 py-4 [perspective:1200px] ${dragging ? "cursor-grabbing" : "cursor-grab"}`}
+            onPointerDown={onPointerDown}
+            onPointerMove={onPointerMove}
+            onPointerUp={onPointerUp}
+            onPointerCancel={onPointerUp}
+          >
             <div
-              className="relative motion-reduce:!animate-none"
-              style={{
-                transformStyle: "preserve-3d",
-                animation: `intro-spin ${SPIN_SECONDS}s linear infinite`,
-              }}
+              ref={spinRef}
+              className="relative"
+              style={{ transformStyle: "preserve-3d", transform: `${TILT} rotateY(0deg)` }}
             >
               {Array.from({ length: DEPTH_LAYERS }, (_, i) => {
                 const isBack = i === DEPTH_LAYERS - 1; // 맨 뒷면도 무지개색 (뒤에서 볼 때)
@@ -158,10 +236,38 @@ export function Intro() {
           </p>
         </div>
 
-        {/* 아래 글자 */}
+        {/* 아래 글자 + 회전 버튼 */}
         <div className="mt-10">
-          <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">{intro.title}</h2>
-          <p className="mt-3 text-base text-background/70 sm:text-lg">{intro.description}</p>
+          <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+            <div>
+              <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">{intro.title}</h2>
+              <p className="mt-3 text-base text-background/70 sm:text-lg">{intro.description}</p>
+            </div>
+            <div className="md:text-right">
+              <p className="text-xs uppercase tracking-[0.25em] text-background/50">
+                {intro.controls.label}
+              </p>
+              <div className="mt-3 flex gap-3">
+                <button
+                  type="button"
+                  onClick={togglePause}
+                  aria-pressed={paused}
+                  className="inline-flex h-12 items-center gap-2 rounded-full border border-background/25 px-5 text-sm font-semibold transition-colors hover:bg-background/10"
+                >
+                  {paused ? <Play className="size-4" /> : <Pause className="size-4" />}
+                  {paused ? intro.controls.resume : intro.controls.pause}
+                </button>
+                <button
+                  type="button"
+                  onClick={resetDirection}
+                  className="inline-flex h-12 items-center gap-2 rounded-full border border-background/25 px-5 text-sm font-semibold transition-colors hover:bg-background/10"
+                >
+                  <RotateCcw className="size-4" />
+                  {intro.controls.reset}
+                </button>
+              </div>
+            </div>
+          </div>
           <div className="mt-8 flex flex-col justify-between gap-2 text-xs uppercase tracking-[0.2em] text-background/50 sm:flex-row">
             <span>{intro.footLeft}</span>
             <span>{intro.footRight}</span>
@@ -169,6 +275,45 @@ export function Intro() {
         </div>
       </Container>
     </section>
+  );
+}
+
+/** 장면 뒤에 은은하게 깔리는 세계지도 (단순한 대륙 모양) */
+function WorldMap() {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 1000 500"
+      className="pointer-events-none absolute left-1/2 top-[14%] w-[min(1200px,160%)] -translate-x-1/2"
+    >
+      <g fill="var(--background)" fillOpacity={0.09} stroke="var(--background)" strokeOpacity={0.18} strokeWidth={1.5} strokeLinejoin="round">
+        <path d="M80 90 L180 60 L290 70 L330 110 L300 150 L260 170 L240 220 L200 250 L170 230 L150 180 L100 160 Z" />
+        <path d="M330 40 L380 35 L390 70 L350 85 Z" />
+        <path d="M250 270 L310 260 L350 300 L330 360 L300 420 L280 460 L265 420 L255 350 Z" />
+        <path d="M450 80 L520 70 L560 90 L540 130 L490 140 L460 120 Z" />
+        <path d="M460 170 L540 160 L590 200 L600 260 L570 330 L530 380 L505 340 L490 270 L455 230 Z" />
+        <path d="M560 70 L700 50 L850 70 L920 110 L880 160 L820 190 L760 230 L700 210 L650 180 L590 150 L560 110 Z" />
+        <path d="M680 200 L720 210 L705 260 Z" />
+        <path d="M780 250 L840 260 L830 280 L790 275 Z" />
+        <path d="M800 330 L880 320 L910 360 L880 400 L820 395 L795 360 Z" />
+      </g>
+    </svg>
+  );
+}
+
+/** 장면을 크게 둘러싸는 점선 궤도 */
+function DottedOrbits() {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 1000 600"
+      preserveAspectRatio="xMidYMid meet"
+      className="pointer-events-none absolute left-1/2 top-[10%] w-[min(1100px,150%)] -translate-x-1/2"
+    >
+      <ellipse cx="500" cy="330" rx="470" ry="250" fill="none" stroke="var(--background)" strokeOpacity={0.35} strokeWidth={8} strokeDasharray="2 26" />
+      <ellipse cx="500" cy="330" rx="480" ry="150" fill="none" stroke="var(--background)" strokeOpacity={0.12} strokeWidth={1} />
+      <line x1="40" y1="330" x2="960" y2="330" stroke="var(--background)" strokeOpacity={0.08} strokeWidth={1} />
+    </svg>
   );
 }
 
