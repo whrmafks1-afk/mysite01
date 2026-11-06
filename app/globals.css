@@ -61,6 +61,9 @@
   --rainbow-6: #8f6cf0;
   --gold: #e3c487;
   --gold-light: #f5e8cc;
+  --gold-deep: #b8914f; /* 다리 옆면(두께) */
+  --pillar: #93a1ab; /* 다리 기둥 */
+  --pillar-dark: #5b6871;
   --globe: #2a8fb5;
   --globe-deep: #165a7d;
   --globe-land: #cad7ea;

@@ -106,8 +106,13 @@ export function Intro() {
           {/* 지구 + 금색 링 */}
           <div aria-hidden="true" className="relative mt-6 flex w-full max-w-3xl flex-1 items-center sm:mt-10">
             <div className="relative mx-auto aspect-[2/1] w-full">
-              {/* 링 뒤쪽 절반 (지구 뒤) */}
-              <Ring className="z-0 [clip-path:inset(0_0_50%_0)]" />
+              {/* 둥근 다리 뒤쪽 (지구 뒤): 뒤 기둥 + 다리 뒤 절반 */}
+              <div className="absolute inset-0 z-0">
+                {BACK_PILLARS.map((p) => (
+                  <Pillar key={p.x} {...p} />
+                ))}
+                <Deck half="back" />
+              </div>
 
               {/* 지구 */}
               <div
@@ -136,8 +141,14 @@ export function Intro() {
                 />
               </div>
 
-              {/* 링 앞쪽 절반 (지구 앞) */}
-              <Ring className="z-20 [clip-path:inset(50%_0_0_0)]" />
+              {/* 둥근 다리 앞쪽 (지구 앞): 앞 기둥 + 다리 앞 절반 + 왼쪽 아래로 이어지는 진입로 */}
+              <div className="absolute inset-0 z-20">
+                {FRONT_PILLARS.map((p) => (
+                  <Pillar key={p.x} {...p} />
+                ))}
+                <Ramp />
+                <Deck half="front" />
+              </div>
             </div>
           </div>
 
@@ -161,15 +172,88 @@ export function Intro() {
   );
 }
 
-/* 지구를 감싸는 금색 링 (납작한 타원) */
-function Ring({ className }: { className?: string }) {
+/* ───────── 둥근 다리 (지교 = 서로를 잇는 다리) ─────────
+   다리 바닥은 지구를 감싸는 납작한 타원이고, 아래에서 회색 기둥들이 받칩니다.
+   기둥 위치: x = 가로 위치(%), y = 다리와 닿는 높이(%), h = 기둥 길이(%) */
+const DECK_WIDTH = "clamp(14px, 3.4vw, 28px)"; // 다리 길 폭
+const RAIL = "clamp(2px, 0.4vw, 4px)"; // 양쪽 금색 난간 굵기
+const SIDE = "clamp(4px, 0.9vw, 9px)"; // 다리 옆면(두께)
+
+const BACK_PILLARS = [
+  { x: 14, y: 36, h: 16 },
+  { x: 86, y: 36, h: 16 },
+];
+const FRONT_PILLARS = [
+  { x: 7, y: 60, h: 30 },
+  { x: 30, y: 71, h: 34 },
+  { x: 70, y: 71, h: 34 },
+  { x: 93, y: 60, h: 30 },
+];
+
+/** 다리 바닥 (half="back" 은 위쪽 절반만, "front" 는 아래쪽 절반만 보여 줌 → 지구를 감싸는 느낌) */
+function Deck({ half }: { half: "back" | "front" }) {
+  const clip = half === "back" ? "[clip-path:inset(0_0_50%_0)]" : "[clip-path:inset(50%_0_-20%_0)]";
+  const ellipse = "absolute inset-x-0 top-1/2 h-[46%] -translate-y-1/2 rounded-[50%]";
+  return (
+    <div className={`absolute inset-0 ${clip}`}>
+      {/* 옆면(두께): 같은 타원을 조금 아래에 진한 금색으로 */}
+      <div
+        className={ellipse}
+        style={{
+          border: `${DECK_WIDTH} solid var(--gold-deep)`,
+          marginTop: SIDE,
+          boxShadow: "0 14px 30px color-mix(in oklab, var(--foreground) 70%, transparent)",
+        }}
+      />
+      {/* 윗면(길) + 양쪽 금색 난간 */}
+      <div
+        className={ellipse}
+        style={{
+          border: `${DECK_WIDTH} solid var(--gold-light)`,
+          boxShadow: `0 0 0 ${RAIL} var(--gold), inset 0 0 0 ${RAIL} var(--gold)`,
+        }}
+      />
+      {/* 길 가운데 점선 */}
+      <div
+        className="absolute top-1/2 h-[46%] -translate-y-1/2 rounded-[50%] border-dashed opacity-60"
+        style={{
+          left: `calc(${DECK_WIDTH} / 2)`,
+          right: `calc(${DECK_WIDTH} / 2)`,
+          height: `calc(46% - ${DECK_WIDTH})`,
+          borderWidth: "1px",
+          borderColor: "var(--gold)",
+        }}
+      />
+    </div>
+  );
+}
+
+/** 다리를 받치는 회색 기둥 */
+function Pillar({ x, y, h }: { x: number; y: number; h: number }) {
   return (
     <div
-      className={`absolute inset-x-0 top-1/2 h-[46%] -translate-y-1/2 rounded-[50%] ${className}`}
+      className="absolute w-[2.6%] -translate-x-1/2 rounded-b-sm"
       style={{
-        border: "clamp(8px, 2.2vw, 18px) solid var(--gold-light)",
-        boxShadow:
-          "0 0 0 clamp(2px, 0.5vw, 4px) var(--gold), inset 0 0 0 clamp(2px, 0.5vw, 4px) var(--gold), 0 10px 30px color-mix(in oklab, var(--foreground) 60%, transparent)",
+        left: `${x}%`,
+        top: `${y}%`,
+        height: `${h}%`,
+        background: "linear-gradient(90deg, var(--pillar-dark), var(--pillar) 45%, var(--pillar-dark))",
+        maskImage: "linear-gradient(to bottom, black 70%, transparent)",
+      }}
+    />
+  );
+}
+
+/** 다리에서 왼쪽 아래로 뻗어 나가는 진입로 (세상과 이어지는 길) */
+function Ramp() {
+  return (
+    <div
+      className="absolute right-[86%] top-[62%] w-[60%] origin-right -rotate-[26deg]"
+      style={{
+        height: DECK_WIDTH,
+        background: "var(--gold-light)",
+        boxShadow: `0 ${SIDE} 0 var(--gold-deep), 0 -${RAIL} 0 var(--gold), 0 calc(${SIDE} + ${RAIL}) 0 var(--gold)`,
+        maskImage: "linear-gradient(to left, black 60%, transparent)",
       }}
     />
   );
