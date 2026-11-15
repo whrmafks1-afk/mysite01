@@ -9,9 +9,13 @@ import { Container } from "@/components/layout/container";
 import { Logo } from "@/components/layout/logo";
 import { cn } from "@/lib/utils";
 
+/** 주소가 http(s)로 시작하면 바깥 사이트 링크로 봅니다. (새 탭에서 열기) */
+const isExternal = (href: string) => /^https?:\/\//.test(href);
+
 /** 상단 메뉴. 메뉴 항목은 site.config.ts 의 nav 에서 바꿉니다. 모바일에서는 햄버거 버튼으로 열림. */
 export function Navbar() {
   const [open, setOpen] = useState(false);
+  const buttonExternal = isExternal(siteConfig.navButton.href);
 
   return (
     <header className="sticky top-0 z-50 border-b border-border/60 bg-background/90 backdrop-blur">
@@ -33,7 +37,9 @@ export function Navbar() {
           ))}
           <a
             href={siteConfig.navButton.href}
-            className="inline-flex h-12 items-center gap-1.5 rounded-xl bg-foreground px-6 text-base font-semibold text-background transition-opacity hover:opacity-90"
+            target={buttonExternal ? "_blank" : undefined}
+            rel={buttonExternal ? "noreferrer" : undefined}
+            className="inline-flex h-12 items-center gap-1.5 rounded-xl bg-primary px-6 text-base font-semibold text-primary-foreground transition-opacity hover:opacity-90"
           >
             {siteConfig.navButton.label}
             <ArrowUpRight className="size-4" />
@@ -66,10 +72,13 @@ export function Navbar() {
           ))}
           <a
             href={siteConfig.navButton.href}
+            target={buttonExternal ? "_blank" : undefined}
+            rel={buttonExternal ? "noreferrer" : undefined}
             onClick={() => setOpen(false)}
-            className="py-3 text-base font-semibold text-primary"
+            className="mt-1 mb-2 inline-flex h-12 items-center justify-center gap-1.5 rounded-xl bg-primary px-6 text-base font-semibold text-primary-foreground"
           >
             {siteConfig.navButton.label}
+            <ArrowUpRight className="size-4" />
           </a>
         </Container>
       </nav>

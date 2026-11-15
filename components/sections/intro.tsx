@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Pause, Play, RotateCcw } from "lucide-react";
+import { ArrowRight, ArrowUpRight, Pause, Play, RotateCcw } from "lucide-react";
 
 import { siteConfig } from "@/site.config";
 import { Container } from "@/components/layout/container";
@@ -237,6 +237,27 @@ export function Intro() {
             <div>
               <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">{intro.title}</h2>
               <p className="mt-3 text-base text-background/70 sm:text-lg">{intro.description}</p>
+
+              {/* 첫 화면에서 바로 블로그로 넘어가는 버튼 (금색 버튼 = 메인 통로) */}
+              <div className="mt-7 flex flex-wrap items-center gap-3">
+                <a
+                  href={intro.cta.primary.href}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex h-14 items-center gap-2 rounded-xl px-7 text-base font-bold shadow-lg shadow-black/20 transition-transform hover:-translate-y-0.5"
+                  style={{ backgroundColor: "var(--gold-light)", color: "var(--foreground)" }}
+                >
+                  {intro.cta.primary.label}
+                  <ArrowRight className="size-5" />
+                </a>
+                <a
+                  href={intro.cta.secondary.href}
+                  className="inline-flex h-14 items-center gap-2 rounded-xl border border-background/25 px-6 text-base font-semibold text-background/90 transition-colors hover:bg-background/10"
+                >
+                  {intro.cta.secondary.label}
+                  <ArrowUpRight className="size-4" />
+                </a>
+              </div>
             </div>
             <div className="md:text-right">
               <p className="text-xs uppercase tracking-[0.25em] text-background/50">
