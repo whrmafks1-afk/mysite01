@@ -39,7 +39,7 @@ export function Series() {
                   <p className="text-xs font-semibold uppercase tracking-[0.15em] text-primary">
                     {item.tag}
                   </p>
-                  <h3 className="mt-3 text-xl font-bold leading-snug tracking-tight sm:text-2xl">
+                  <h3 className="mt-3 text-balance text-xl font-bold leading-snug tracking-tight sm:text-2xl">
                     {item.title}
                   </h3>
                 </div>
@@ -79,7 +79,7 @@ export function Series() {
               <p className="text-xs font-semibold uppercase tracking-[0.15em] text-highlight">
                 All Posts
               </p>
-              <h3 className="mt-3 text-xl font-bold leading-snug tracking-tight sm:text-2xl">
+              <h3 className="mt-3 text-balance text-xl font-bold leading-snug tracking-tight sm:text-2xl">
                 꿀템 시리즈
                 <br />
                 전체 글 보기
